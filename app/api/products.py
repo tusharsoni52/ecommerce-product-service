@@ -5,7 +5,10 @@ from app.db.database import get_db
 from app.schemas.product import ProductCreate, ProductResponse
 from app.services import product_service
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/api/v1/products",
+    tags=["Products v1"]
+)
 
 
 @router.get("/health")
@@ -16,12 +19,12 @@ def health():
     }
 
 
-@router.get("/products", response_model=list[ProductResponse])
+@router.get("", response_model=list[ProductResponse])
 def get_products(db: Session = Depends(get_db)):
     return product_service.get_all_products(db)
 
 
-@router.get("/products/{product_id}", response_model=ProductResponse)
+@router.get("/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int,
                 db: Session = Depends(get_db)):
     product = product_service.get_product_by_id(db, product_id)
@@ -35,7 +38,7 @@ def get_product(product_id: int,
     return product
 
 
-@router.post("/products",
+@router.post("",
              response_model=ProductResponse,
              status_code=201)
 def create_product(product: ProductCreate,
